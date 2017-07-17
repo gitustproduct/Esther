@@ -1,10 +1,12 @@
-
-
+/********************************************************
+AIM : AUDIT TRIAL VISUALIZATION
+AUTHOR : ESTHER BABY
+********************************************************/
 import project.*;
 import java.util.*;
 import java.util.Calendar;
 import java.text.*;
-import java.awt.*;
+import java.awt.Point;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.net.URL;
@@ -30,10 +32,7 @@ for(int i=0;i<500;i++)
 	points[i].x=0;
 }
 
-
-
-//System.out.println("Enter user id");
-//name=input.nextLine();
+//output folder creation
 File dir = new File("audit_pictures");
 dir.mkdir();
 for(File file:dir.listFiles())
@@ -41,10 +40,10 @@ for(File file:dir.listFiles())
 	file.delete();
 }
 
-        // Open this file.
-        BufferedReader reader = new BufferedReader(new FileReader("sample.txt"));
+// Open this file.
+BufferedReader reader = new BufferedReader(new FileReader("sample.txt"));
 
-        // Read lines from file.
+// Read lines from file.
 while (true) 
 {
 String liness = reader.readLine();
@@ -55,21 +54,16 @@ if (liness == null)
 String[] lines = liness.split("\\),\\(");
 for (String line : lines) 
 {
-
-	//if(line.contains(","+name+","))
-	{
-
 		// Split line on comma.
 		if(line.contains("Get All Answers USER ID:"))//exam begining-timer intializing-reading start time
 		{
-			System.out.println(line);
+			System.out.println("\n"+line);
 			starttime=simpleDateFormat.parse(line.substring(line.indexOf("-")-4,line.lastIndexOf(":")+3));
-
-myCal.setTime(starttime);
-myCal.set(Calendar.SECOND,Integer.parseInt(line.substring(line.lastIndexOf(":")+1,line.lastIndexOf(":")+3)));
-System.out.println("start date : "+myCal.getTime());
-myCal.add(Calendar.HOUR,1);
-System.out.println("ending time calculated : "+myCal.getTime());
+			myCal.setTime(starttime);
+			myCal.set(Calendar.SECOND,Integer.parseInt(line.substring(line.lastIndexOf(":")+1,line.lastIndexOf(":")+3)));
+			System.out.println("start date : "+myCal.getTime());
+			myCal.add(Calendar.HOUR,1);
+			System.out.println("ending time calculated : "+myCal.getTime());
 		}
 		else if(line.contains("Email Examinee Score USER ID:"))
 		{
@@ -77,9 +71,11 @@ System.out.println("ending time calculated : "+myCal.getTime());
 			points[0].x=90;
 			points[0].y=525;
 			texts[0]=line.substring(line.indexOf("EmailId:")+9,line.length()-23);
-			System.out.println("texts[0]="+texts[0]);
+			System.out.println("\nEmail id "+texts[0]);
 			lines_no++;
-			I.CreateImage(n,texts,points,"file:////home/esther/Desktop/Screenshots/submit.png",Integer.toString(lines_no));
+			String imgname;
+			imgname=String.format("%03d",lines_no);
+			I.CreateImage(n,texts,points,"file:////home/esther/Desktop/ust_final/Screenshots/submit.png",imgname);
 			n=0;
 		}
 
@@ -88,7 +84,6 @@ System.out.println("ending time calculated : "+myCal.getTime());
 			String[] parts = line.split(",");
 			for (String part : parts) 
 			{
-
 				if(part.contains("Valid USER ID="))//login sucessful entry
 				{
 					for(int k=0;k<75;k++)
@@ -101,34 +96,21 @@ System.out.println("ending time calculated : "+myCal.getTime());
 					texts[0]=part.substring(part.indexOf("=") + 1, part.length()-1);
 					texts[1]="******";
 					lines_no++;
-					I.CreateImage(n,texts,points,"file:////home/esther/Desktop/Screenshots/login.jpeg",Integer.toString(lines_no));
+					String imgname;
+					imgname=String.format("%03d",lines_no);
+					I.CreateImage(n,texts,points,"file:////home/esther/Desktop/ust_final/Screenshots/login.jpeg",imgname);
 					n=0;
-					/*for(int i=0;i<100;i++)
-					{
-					points[i].y=0;
-					points[i].x=0;
-					}*/
 				}
-					//System.out.println(part.contains("Valid USER ID="));
 
 				if(part.contains("Submit Qno= "))
 				{
 
 					if(n!=0)
-					{
 						n=n-8;
-						/*for(int i=6;i>0;i--)
-						{
-							texts[n-i]=" ";
-							points[n-i].x=0;
-							points[n-i].y=0;
-						}*/
-					}
 					String str_question=part.substring(part.indexOf("= ") + 1, part.indexOf("Ans=")-1);
 					String str_answer=part.substring(part.indexOf("Ans=") + 4, part.indexOf("Ans=")+5);
 					int int_question=Integer.parseInt(str_question.trim());
 					int int_answer=Integer.parseInt(str_answer.trim());
-//System.out.print(int_question+"  ");
 					texts[n]="✔";
 					points[n].x=int_question*47;
 					if(int_question>25)
@@ -137,118 +119,139 @@ System.out.println("ending time calculated : "+myCal.getTime());
 					points[n].y=315;
 					else
 					points[n].y=230;
-					//System.out.println("value of n = "+n+ " points( "+points[n].x+","+points[n].y+") Image:n="+n+","+texts);
 					n++;
+
+					//place questions
 					texts[n]=I.QUESTIONS[int_question];
 					points[n].x=80;
 					points[n].y=510;
 					n++;
 
+					//place options
 					texts[n]=I.OPTIONS[int_question][1];
 					points[n].x=120;
 					points[n].y=625;
 					n++;
-
 					texts[n]=I.OPTIONS[int_question][2];
 					points[n].x=120;
 					points[n].y=690;
 					n++;
-
 					texts[n]=I.OPTIONS[int_question][3];
 					points[n].x=120;
 					points[n].y=755;
 					n++;
-
 					texts[n]=I.OPTIONS[int_question][4];
 					points[n].x=120;
 					points[n].y=820;
 					n++;
+					switch(int_answer)
+					{
+						case 1:
+						{
+							texts[n]="*";
+							points[n].x=92;
+							points[n].y=629;
+							n++;
+							break;
+						}
+						case 2:
+						{
+							texts[n]="*";
+							points[n].x=92;
+							points[n].y=690;
+							n++;
+						break;
+						}
+						case 3:
+						{
+							texts[n]="*";	
+							points[n].x=92;
+							points[n].y=758;
+							n++;
+							break;
+						}
+						case 4:
+						{					
+							texts[n]="*";
+							points[n].x=92;
+							points[n].y=820;
+							n++;
+							break;
+						}
+					}
 
-
-switch(int_answer)
-{
-case 1:
-{
-texts[n]="*";
-points[n].x=92;
-points[n].y=629;
-n++;
-break;
-}
-case 2:
-{
-texts[n]="*";
-points[n].x=92;
-points[n].y=690;
-n++;
-break;
-}
-case 3:
-{
-texts[n]="*";
-points[n].x=92;
-points[n].y=758;
-n++;
-break;
-}
-case 4:
-{
-texts[n]="*";
-points[n].x=92;
-points[n].y=820;
-n++;
-break;
-}
-
-}
-
-Calendar myCal2 = new GregorianCalendar();
-endtime=simpleDateFormat.parse(line.substring(line.indexOf("-")-4,line.lastIndexOf(":")+3));
-myCal2.setTime(endtime);
-myCal2.set(Calendar.SECOND,Integer.parseInt(line.substring(line.lastIndexOf(":")+1,line.lastIndexOf(":")+3)));
-long timer=myCal.getTimeInMillis()-myCal2.getTimeInMillis();
-long sec=(timer/1000)%60;
-System.out.println(sec);
-long min=(timer/(1000*60))%60;
-long hour=(timer/(1000*60*60))%60;
-String temp_timer_hour,temp_timer_min,temp_timer_sec;
-if(hour<10)
-temp_timer_hour="0"+hour;
-else
-temp_timer_hour=String.valueOf(hour);
-if(min<10)
-temp_timer_min="0"+min;
-else
-temp_timer_min=String.valueOf(min);
-if(sec<10)
-temp_timer_sec="0"+sec;
-else
-temp_timer_sec=String.valueOf(sec);
-texts[n]=temp_timer_hour+":"+temp_timer_min+":"+temp_timer_sec;
-points[n].x=1100;
-points[n].y=380;
-n++;
-
-
-
-					texts[n]="QUESTION NO : "+str_question;
-					points[n].x=80;
-					points[n].y=380;
-					n++;
-//System.out.println("n = "+n);
-					lines_no++;
-					I.CreateImage(n,texts,points,"file:////home/esther/Desktop/Screenshots/question.png",Integer.toString(lines_no));;
-
+				//Time extraction
+				Calendar myCal2 = new GregorianCalendar();
+				endtime=simpleDateFormat.parse(line.substring(line.indexOf("-")-4,line.lastIndexOf(":")+3));
+				myCal2.setTime(endtime);
+				myCal2.set(Calendar.SECOND,Integer.parseInt(line.substring(line.lastIndexOf(":")+1,line.lastIndexOf(":")+3)));
+				long timer=myCal.getTimeInMillis()-myCal2.getTimeInMillis();
+				long sec=(timer/1000)%60;
+				System.out.print(sec+"  ");
+				long min=(timer/(1000*60))%60;
+				long hour=(timer/(1000*60*60))%60;
+				String temp_timer_hour,temp_timer_min,temp_timer_sec;
+				if(hour<10)
+					temp_timer_hour="0"+hour;
+				else
+					temp_timer_hour=String.valueOf(hour);
+				if(min<10)
+					temp_timer_min="0"+min;
+				else
+					temp_timer_min=String.valueOf(min);
+				if(sec<10)
+					temp_timer_sec="0"+sec;
+				else
+					temp_timer_sec=String.valueOf(sec);
+				texts[n]=temp_timer_hour+":"+temp_timer_min+":"+temp_timer_sec;				
+				points[n].x=1100;
+				points[n].y=380;				
+				n++;
+				texts[n]="QUESTION NO : "+str_question;
+				points[n].x=80;
+				points[n].y=380;
+				n++;
+				lines_no++;
+				String imgname;
+				imgname=String.format("%03d",lines_no);
+				I.CreateImage(n,texts,points,"file:////home/esther/Desktop/ust_final/Screenshots/question.png",imgname);;
 				}
 			}
+		}	
+}
+}
+
+//create video
+{
+		File directory = new File("/home/esther/Desktop/ust_final/audit_pictures");
+		File[] files = directory.listFiles();
+		List<String> list = new ArrayList<>();
+		for(File f : files) 
+			if(f.isFile())
+				for(int j=0;j<200;j++)
+						list.add(f.getPath());
+		Collections.sort(list);
+		DataOutputStream out = new DataOutputStream(new FileOutputStream(directory.getPath()+"/movie.mjpeg"));
+		for(String item : list) 
+		{
+			DataInputStream in = new DataInputStream(new FileInputStream(item));
+			while(in.available() > 0) 
+			{
+				byte data[] = new byte[ in.available()];
+				in.read(data);
+				out.write(data);
+			}
+			in.close();
 		}
-	}
+		out.close();
 }
-}
+//mjpeg to avi
+File fc1= new File("audit_pictures/movie.mjpeg");
+fc1.renameTo(new File("audit_pictures/movie.avi"));
 
 reader.close();
 System.out.println();
-System.out.println(lines_no+" images created.\nDo you want to save these files for further use? Press Y for yes");
+System.out.println(lines_no+" images and video created.\nDo you want to save these files for further use? Press Y for yes");
 String choice=input.nextLine();
 switch(choice)
 {
@@ -268,7 +271,5 @@ switch(choice)
 		dir.renameTo(newName);
 	}
 }
-// dir.renameTo(newDir);
 }
-
 }
